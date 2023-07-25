@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="common/commonHeader::head">
+
+</head>
+<body class="page-ath" style="font-family: 'Times New Roman' !important;">
+<input type="hidden" th:value="${redirect_uri}" id="redirectUri">
+
+<div class="page-ath-wrap">
+    <div class="page-ath-content">
+        <div class="page-ath-form">
+            <h2 class="page-ath-heading">Đăng nhập <small>với tài khoản đăng kí</small></h2>
+            <div class="input-wrap">
+                <input type="text" name="username" id="username" placeholder="Tài khoản" class="input-bordered">
+                <label id="err-username-sign-in" class="error" style="top: 0px"></label>
+            </div>
+            <div class="input-wrap">
+                <input type="password" name="password" id="password" placeholder="Mật khẩu" class="input-bordered">
+                <label id="err-password-sign-in" class="error" style="top: 0px"></label>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="input-item text-left">
+                    <input class="input-checkbox input-checkbox-md" id="remember-me" disabled type="checkbox">
+                    <label for="remember-me">Nhớ mật khẩu</label>
+                </div>
+                <div>
+                    <a href="javascript:void(0)">Quên mật khẩu ?</a>
+                    <div class="gaps-2x"></div>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-block" id="actionLogin">Đăng nhập</button>
+            <div class="gaps-2x"></div>
+            <div class="gaps-2x"></div>
+            <div class="form-note">
+                Chưa có tài khoản? <a th:href="@{/auth/sign-up(redirectUri=${redirect_uri})}"> <strong>Đăng kí</strong></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container" class="toast-top-right" style="display: none">
+    <div class="toast toast-error" aria-live="assertive">
+        <div class="toast-message"><em class="ti ti-na toast-message-icon"></em> <span id="toast-mess"></span></div>
+    </div>
+</div>
+
+
+<script th:replace="common/commonJS::script"></script>
+<script th:src="@{/js/login.js}"></script>
+</body>
+</html>

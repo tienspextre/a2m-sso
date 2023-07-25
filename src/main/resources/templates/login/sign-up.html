@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="common/commonHeader::head">
+
+</head>
+<body class="page-ath" style="font-family: 'Times New Roman' !important;">
+<input type="hidden" th:value="${redirect_uri}" id="redirectUri">
+
+<div class="page-ath-wrap">
+  <div class="page-ath-content">
+    <div class="page-ath-form">
+      <h2 style="color: #036; font-weight: 600">Tạo tài khoản đăng kí mới</h2>
+      <div>
+        <label class="input-item-label text-exlight">Họ và tên <span style="color: red">*</span></label>
+        <div class="input-wrap">
+          <input type="text" id="fullname-sign-up" name="fullname" placeholder="Họ và tên" class="input-bordered">
+          <label id="err-fullname-sign-up" class="error" style="top: 0px"></label>
+        </div>
+        <label class="input-item-label text-exlight">Email <span style="color: red">*</span></label>
+        <div class="input-wrap">
+          <input type="email" id="email-sign-up" name="email" placeholder="Email" class="input-bordered">
+          <label id="err-email-sign-up" class="error" style="top: 0px"></label>
+        </div>
+        <label class="input-item-label text-exlight">Tên người dùng <span style="color: red">*</span></label>
+        <div class="input-wrap">
+          <input type="text" id="username-sign-up" name="username" placeholder="Tên người dùng" class="input-bordered">
+          <label id="err-username-sign-up" class="error" style="top: 0px"></label>
+        </div>
+        <label class="input-item-label text-exlight">Mật khẩu <span style="color: red">*</span></label>
+        <div class="input-wrap">
+          <input type="password" id="password-sign-up" name="password" placeholder="Mật khẩu" class="input-bordered">
+          <label id="err-password-sign-up" class="error" style="top: 0px"></label>
+        </div>
+        <label class="input-item-label text-exlight">Nhập lại mật khẩu <span style="color: red">*</span></label>
+        <div class="input-item">
+          <input type="password" id="repeat-password-sign-up" placeholder="Nhập lại mật khẩu" class="input-bordered">
+          <label id="err-repPassword-sign-up" class="error" style="top: 0px"></label>
+        </div>
+        <button class="btn btn-primary btn-block" id="btn-sign-up">Đăng kí</button>
+      </div>
+
+      <div class="gaps-2x"></div>
+      <div class="gaps-2x"></div>
+      <div class="form-note">
+        Đã có tài khoản ? <a th:href="@{/auth/login(redirectUri=${redirect_uri})}"> <strong>Đăng nhập</strong></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-top-right" style="display: none">
+  <div class="toast toast-error" aria-live="assertive">
+    <div class="toast-message"><em class="ti ti-na toast-message-icon"></em> <span id="toast-mess"></span></div>
+  </div>
+</div>
+
+
+<script th:replace="common/commonJS::script"></script>
+<script th:src="@{/js/sign-up.js}"></script>
+</body>
+</html>
