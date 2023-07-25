@@ -2,6 +2,10 @@ package com.a2m.sso.controller.render;
 
 import com.a2m.sso.constant.CommonConstants;
 import com.a2m.sso.constant.SecurityConstants;
+import com.a2m.sso.dao.UserDAO;
+import com.a2m.sso.model.UserResponse;
+import com.a2m.sso.service.impl.UserDetailsServiceImpl;
+import com.a2m.sso.service.impl.UserServiceImpl;
 import com.a2m.sso.util.CookieUtils;
 import com.a2m.sso.util.JwtProvinderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +29,12 @@ public class AuthController {
 
     @Autowired
     private JwtProvinderUtils jwtProvinderUtils;
+    
+    @Autowired
+    private UserServiceImpl userServiceImpl;
+    
+    @Autowired
+    private UserDAO userDAO;
 
     @GetMapping("login")
     public String login(@RequestParam String redirectUri, @RequestParam(required = false) String actionType, HttpServletRequest request, Model model, HttpServletResponse response) {
@@ -55,6 +65,16 @@ public class AuthController {
     public String login(@RequestParam String redirectUri, Model model) {
         model.addAttribute(SecurityConstants.REDIRECT_URI_KEY, redirectUri);
         return "login/sign-up";
+    }
+    @GetMapping("verify")
+    public String verify(@RequestParam String verifyKey, @RequestParam String redirectUri, Model model) {
+    	model.addAttribute("redirectUri", redirectUri);
+    	int count = userDAO.checkVerifyKey(verifyKey);
+    	if (count != 0) {
+    		userServiceImpl.changeStatusByVerifyKey(verifyKey);
+    	}
+    	else return "/login/verifyFailed";
+    	return "login/verify";
     }
 
 }

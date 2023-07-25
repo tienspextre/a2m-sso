@@ -9,6 +9,7 @@ import com.a2m.sso.model.req.LoginReq;
 import com.a2m.sso.model.req.SignupReq;
 import com.a2m.sso.service.impl.ComSeqServiceImpl;
 import com.a2m.sso.service.impl.MailServiceImpl;
+import com.a2m.sso.service.impl.UserDetailsImpl;
 import com.a2m.sso.service.impl.UserServiceImpl;
 import com.a2m.sso.util.CookieUtils;
 import com.a2m.sso.util.JwtProvinderUtils;
@@ -45,7 +46,6 @@ public class AuthApiController {
     
     @Autowired
     private UserServiceImpl userServiceImpl;
-    
 
     @PostMapping("login")
     private ResponseEntity<DataResponse> login(@Valid @RequestBody LoginReq loginReq, HttpServletResponse response) {
@@ -59,15 +59,24 @@ public class AuthApiController {
             resp.setStatus(CommonConstants.RESULT_OK);
             resp.setResponseData(jwt);
             resp.setMessage("Login success");
-        } catch (DisabledException e) {
-            e.printStackTrace();
-            resp.setStatus(CommonConstants.RESULT_OTP_EMAIL);
-            resp.setMessage("Account isn't verified");
+            
         } catch (Exception e) {
         	e.printStackTrace();
-            resp.setStatus(CommonConstants.RESULT_NG);
-            resp.setMessage("The username or password is wrong");
+//        	if (!userPrincipal.isEnabled()) {
+//        		resp.setStatus(CommonConstants.RESULT_OTP_EMAIL);
+//        		resp.setMessage("Account isn't verified");
+//        	}
+//        	else {
+//        		resp.setStatus(CommonConstants.RESULT_NG);
+//                resp.setMessage("The username or password is wrong");
+//        	}
+        	resp.setStatus(CommonConstants.RESULT_NG);
+        	resp.setMessage("The username or password is wrong");
         }
+//        catch (DisabledException e) {
+//            e.printStackTrace();
+//            
+//        } 
         return ResponseEntity.ok(resp);
     }
     

@@ -63,4 +63,12 @@
     <insert id="insertUserInfo" parameterType="com.a2m.sso.model.UserResponse">
     	INSERT INTO tsst_user_info (USER_UID, FULL_NAME, EMAIL, VERIFY_KEY) VALUES(#{userUid}, #{fullName}, #{email}, #{emailVerifyKey})
     </insert>
+    
+    <select id="checkVerifyKey" parameterType="String" resultType="int">
+    	SELECT COUNT(*) FROM tsst_user LEFT JOIN tsst_user_info ON tsst_user.USER_UID = tsst_user_info.USER_UID WHERE #{verifyKey} = tsst_user_info.VERIFY_KEY
+    </select>
+    
+    <update id="setStatusByVerifyKey" parameterType="String">
+    	UPDATE tsst_user LEFT JOIN tsst_user_info ON tsst_user.USER_UID = tsst_user_info.USER_UID SET tsst_user.STATUS = '02-03' WHERE #{verifyKey} = tsst_user_info.VERIFY_KEY
+    </update>
 </mapper>
