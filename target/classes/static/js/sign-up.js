@@ -23,6 +23,8 @@ const AuthSignUp = {
     redirectUri: "",
     methods: {
         signup: () => {
+			const emailInput = document.getElementById("email-sign-up").value;
+    		const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 			let name = $("#fullname-sign-up").val();
 			let email = $("#email-sign-up").val();
             let username = $("#username-sign-up").val()
@@ -58,6 +60,11 @@ const AuthSignUp = {
                 return;
             }
             $("#err-fullname-sign-up").text("")
+            
+            if (!emailRegex.test(emailInput)){
+				$("#err-email-sign-up").text("Định dạng email không đúng")
+                return;
+			}
             
             if (password != repPassword) {
 				$("#err-repPassword-sign-up").text("Mật khẩu không trùng khớp")

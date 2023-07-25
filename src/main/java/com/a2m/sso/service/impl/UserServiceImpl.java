@@ -58,11 +58,16 @@ public class UserServiceImpl implements UserService {
 	    int KEY_LENGTH = 20;
         SecureRandom secureRandom = new SecureRandom();
         StringBuilder sb = new StringBuilder(KEY_LENGTH);
-        while (sb.length() < KEY_LENGTH) {
-            int randomIndex = secureRandom.nextInt(CHARACTERS.length());
-            char randomChar = CHARACTERS.charAt(randomIndex);
-            sb.append(randomChar);
-        }	
+        int checkAvailable = 1;
+        while (checkAvailable != 0) {
+        	sb = new StringBuilder(KEY_LENGTH);
+            while (sb.length() < KEY_LENGTH) {
+                int randomIndex = secureRandom.nextInt(CHARACTERS.length());
+                char randomChar = CHARACTERS.charAt(randomIndex);
+                sb.append(randomChar);
+            }	
+            checkAvailable = userDAO.checkVerifyKey(sb.toString());
+        }
 	    user.setEmailVerifyKey(sb.toString());
         userDAO.insertUser(user);
         userDAO.insertUserInfo(user);
@@ -70,8 +75,12 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public void verifyUser (String verifyKey) {
-    	
+    public void changeStatusByVerifyKey(String verifyKey){
+    	try {
+    		userDAO.setStatusByVerifyKey(verifyKey);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
     }
 
     // Nếu cập nhật thông tin user thì phải xóa thông tin user đã lưu cache

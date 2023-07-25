@@ -21,4 +21,8 @@ public interface UserDAO {
     void insertUser (UserResponse user);
     
     void insertUserInfo (UserResponse user);
+    
+    void setStatusByVerifyKey (String verifyKey);
+    
+    int checkVerifyKey(String verifyKey);
 }

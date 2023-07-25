@@ -28,10 +28,12 @@ public class MailServiceImpl implements MailService {
             message.setFrom(new InternetAddress("nctvip19@gmail.com"));
             message.setRecipients(MimeMessage.RecipientType.TO, email);
             message.setSubject("Verification for account");
-
+            String verifyLink = "http://localhost:8097/auth/verify?verifyKey=" + verifyKey + "&redirectUri=http://localhost:4200";
             String htmlContent = "<h1>Thank you for signing up!</h1>" +
             					 "<h2>Please click on the link below to verify your account</h2>" + 
-            					 "<a href=\"https://localhost:8097\" style=\"display:inline-block; padding:12px 24px; background-color:#007bff; color:#fff; text-decoration:none;\">Get Started</a>";
+            					 "<a href=\"" + verifyLink + "\" style=\"display: inline-block; padding: 12px 24px; background-color: #007bff; color: #fff; text-decoration: none;\">\n" +
+                                         "Get Started\n" +
+                                         "</a>\n";
             message.setContent(htmlContent, "text/html; charset=utf-8");
 
             javaMailSender.send(message);
