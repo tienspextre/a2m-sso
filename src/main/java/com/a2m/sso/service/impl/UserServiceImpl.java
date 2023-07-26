@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
 		user.setStatus(signupReq.getStatus());
 		user.setFullName(signupReq.getName());
 		user.setUserUid(comSeqServiceImpl.getSeq("seq_user_uid")); 
-		String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+		String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	    int KEY_LENGTH = 20;
         SecureRandom secureRandom = new SecureRandom();
         StringBuilder sb = new StringBuilder(KEY_LENGTH);
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
 	    user.setEmailVerifyKey(sb.toString());
         userDAO.insertUser(user);
         userDAO.insertUserInfo(user);
-        mailServiceImpl.sendVerifyEmail(sb.toString(), user.getEmail());
+        mailServiceImpl.sendVerifyEmail(sb.toString(), user.getEmail(), signupReq.getRedirectUri());
     }
     
     @Override

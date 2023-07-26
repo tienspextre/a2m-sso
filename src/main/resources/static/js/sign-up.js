@@ -23,7 +23,6 @@ const AuthSignUp = {
     redirectUri: "",
     methods: {
         signup: () => {
-			const emailInput = document.getElementById("email-sign-up").value;
     		const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 			let name = $("#fullname-sign-up").val();
 			let email = $("#email-sign-up").val();
@@ -61,7 +60,7 @@ const AuthSignUp = {
             }
             $("#err-fullname-sign-up").text("")
             
-            if (!emailRegex.test(emailInput)){
+            if (!emailRegex.test(email.trim())){
 				$("#err-email-sign-up").text("Định dạng email không đúng")
                 return;
 			}
@@ -76,7 +75,8 @@ const AuthSignUp = {
                 username: username,
                 password: password,
                 email: email,
-                name: name
+                name: name,
+                redirectUri: AuthSignUp.redirectUri
             }
 
             $.ajax({
@@ -86,6 +86,7 @@ const AuthSignUp = {
                 contentType: 'application/json',
                 data: JSON.stringify(SignupReq)
             }).done(function (resp) {
+				console.log(resp.status);
                 if (resp.status == RESULT_OK) {
 					$("#toast-mess").text("Đăng ký thành công")
                     $('#toast-container').show(0).delay(3000).hide(0);
@@ -98,7 +99,7 @@ const AuthSignUp = {
                     $('#toast-container').show(0).delay(3000).hide(0);
                 }
             }).fail(function (err) {
-                $("#toast-mess").text("Tài khoản đã tồn tại")
+                $("#toast-mess").text("An error occured")
                 $('#toast-container').show(0).delay(3000).hide(0);
             });
         },
