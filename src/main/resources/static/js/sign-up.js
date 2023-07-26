@@ -90,8 +90,11 @@ const AuthSignUp = {
 					$("#toast-mess").text("Đăng ký thành công")
                     $('#toast-container').show(0).delay(3000).hide(0);
                     AuthSignUp.methods.handleRedirect();
-                } else if (resp.status == RESULT_NG) {
+                } else if (resp.status == USER_EXISTED) {
                     $("#toast-mess").text("Tài khoản đã tồn tại")
+                    $('#toast-container').show(0).delay(3000).hide(0);
+                } else if (resp.status == EMAIL_EXISTED) {
+                    $("#toast-mess").text("Email đã tồn tại")
                     $('#toast-container').show(0).delay(3000).hide(0);
                 }
             }).fail(function (err) {
