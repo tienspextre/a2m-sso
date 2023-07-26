@@ -21,7 +21,7 @@ public class MailServiceImpl implements MailService {
         this.javaMailSender = javaMailSender;
     }
 
-    public void sendVerifyEmail(String verifyKey, String email){
+    public void sendVerifyEmail(String verifyKey, String email, String redirectUri){
     	try {
     		MimeMessage message = javaMailSender.createMimeMessage();
 

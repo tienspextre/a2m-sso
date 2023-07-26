@@ -21,4 +21,5 @@ public class SignupReq {
     private String name;
     private int userUID;
     private String status = "02-04";
+    private String redirectUri;
 }
