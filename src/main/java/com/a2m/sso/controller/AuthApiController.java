@@ -10,6 +10,7 @@ import com.a2m.sso.model.req.SignupReq;
 import com.a2m.sso.service.impl.ComSeqServiceImpl;
 import com.a2m.sso.service.impl.MailServiceImpl;
 import com.a2m.sso.service.impl.UserDetailsImpl;
+import com.a2m.sso.service.impl.UserDetailsServiceImpl;
 import com.a2m.sso.service.impl.UserServiceImpl;
 import com.a2m.sso.util.CookieUtils;
 import com.a2m.sso.util.JwtProvinderUtils;
@@ -17,10 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +49,9 @@ public class AuthApiController {
     
     @Autowired
     private UserServiceImpl userServiceImpl;
+    
+    @Autowired
+    private UserDAO userDAO;
 
     @PostMapping("login")
     private ResponseEntity<DataResponse> login(@Valid @RequestBody LoginReq loginReq, HttpServletResponse response) {
@@ -53,30 +59,32 @@ public class AuthApiController {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginReq.getUsername(), loginReq.getPassword()));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtProvinderUtils.generateJwtByPrivateKey(authentication);
-            CookieUtils.addCookie(response, SecurityConstants.ACCESS_TOKEN, jwt);
-            resp.setStatus(CommonConstants.RESULT_OK);
-            resp.setResponseData(jwt);
-            resp.setMessage("Login success");
+//            String status = userServiceImpl.getStatusByUserID(loginReq.getUsername());
+//            System.out.println(status);
+//            if (status.equals("02-04")) {
+//            	resp.setStatus(CommonConstants.RESULT_OTP_EMAIL);
+//            	resp.setMessage("Account isn't verified");
+//            }
+//            else {
+            	SecurityContextHolder.getContext().setAuthentication(authentication);
+                String jwt = jwtProvinderUtils.generateJwtByPrivateKey(authentication);
+                CookieUtils.addCookie(response, SecurityConstants.ACCESS_TOKEN, jwt);
+                resp.setStatus(CommonConstants.RESULT_OK);
+                resp.setResponseData(jwt);
+                resp.setMessage("Login success");
+//            }
             
-        } catch (Exception e) {
-        	e.printStackTrace();
-//        	if (!userPrincipal.isEnabled()) {
-//        		resp.setStatus(CommonConstants.RESULT_OTP_EMAIL);
-//        		resp.setMessage("Account isn't verified");
-//        	}
-//        	else {
-//        		resp.setStatus(CommonConstants.RESULT_NG);
-//                resp.setMessage("The username or password is wrong");
-//        	}
-        	resp.setStatus(CommonConstants.RESULT_NG);
-        	resp.setMessage("The username or password is wrong");
         }
-//        catch (DisabledException e) {
-//            e.printStackTrace();
-//            
-//        } 
+        catch(BadCredentialsException e) {
+        	e.printStackTrace();
+            resp.setStatus(CommonConstants.RESULT_NG);
+        	resp.setMessage("Username or password error");
+        }
+        catch (DisabledException e) {
+            e.printStackTrace();
+            resp.setStatus(CommonConstants.RESULT_OTP_EMAIL);
+        	resp.setMessage("Username disabled");
+        } 
         return ResponseEntity.ok(resp);
     }
     
@@ -85,9 +93,19 @@ public class AuthApiController {
         DataResponse resp = new DataResponse();
         try {
 //        	System.out.println(signupReq.getName());
-        	userServiceImpl.insertUser(signupReq);
-            resp.setStatus(CommonConstants.RESULT_OK);
-            resp.setMessage("Signup success");
+        	if (userDAO.validateExistingUserName(signupReq.getUsername()) != 0) {
+        		resp.setStatus(CommonConstants.USER_EXISTED);
+                resp.setMessage("Username existed");
+        	}
+        	else if (userDAO.validateExistingEmail(signupReq.getEmail()) != 0) {
+        		resp.setStatus(CommonConstants.EMAIL_EXISTED);
+                resp.setMessage("Email existed");
+        	}
+        	else {
+        		userServiceImpl.insertUser(signupReq);
+        		resp.setStatus(CommonConstants.RESULT_OK);
+        		resp.setMessage("Signup success");
+        	}
         } catch (Exception e) {
             e.printStackTrace();
             resp.setStatus(CommonConstants.RESULT_NG);
@@ -95,4 +113,5 @@ public class AuthApiController {
         }
         return ResponseEntity.ok(resp);
     }
+    
 }

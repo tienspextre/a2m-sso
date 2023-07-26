@@ -25,4 +25,8 @@ public interface UserDAO {
     void setStatusByVerifyKey (String verifyKey);
     
     int checkVerifyKey(String verifyKey);
+    
+    int validateExistingEmail(String email);
+    
+    int validateExistingUserName(String username);
 }

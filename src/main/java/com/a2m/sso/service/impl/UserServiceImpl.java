@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
 		user.setStatus(signupReq.getStatus());
 		user.setFullName(signupReq.getName());
 		user.setUserUid(comSeqServiceImpl.getSeq("seq_user_uid")); 
-		String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
 	    int KEY_LENGTH = 20;
         SecureRandom secureRandom = new SecureRandom();
         StringBuilder sb = new StringBuilder(KEY_LENGTH);
@@ -82,6 +82,7 @@ public class UserServiceImpl implements UserService {
     		e.printStackTrace();
     	}
     }
+    
 
     // Nếu cập nhật thông tin user thì phải xóa thông tin user đã lưu cache
     // Dùng @CacheEvict("user") tham số là userUid
