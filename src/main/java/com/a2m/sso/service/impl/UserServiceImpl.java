@@ -71,7 +71,31 @@ public class UserServiceImpl implements UserService {
 	    user.setEmailVerifyKey(sb.toString());
         userDAO.insertUser(user);
         userDAO.insertUserInfo(user);
-        mailServiceImpl.sendVerifyEmail(sb.toString(), user.getEmail(), signupReq.getRedirectUri());
+        mailServiceImpl.sendVerifyEmail(sb.toString(), user.getEmail(), signupReq.getRedirectUri(), "verify");
+    }
+    
+    @Override
+    public void forgotPass (SignupReq signupReq) throws Exception{
+    	UserResponse user = new UserResponse();
+		user.setUserId(signupReq.getUsername());
+		user.setEmail(signupReq.getEmail());
+		String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	    int KEY_LENGTH = 20;
+        SecureRandom secureRandom = new SecureRandom();
+        StringBuilder sb = new StringBuilder(KEY_LENGTH);
+        int checkAvailable = 1;
+        while (checkAvailable != 0) {
+        	sb = new StringBuilder(KEY_LENGTH);
+            while (sb.length() < KEY_LENGTH) {
+                int randomIndex = secureRandom.nextInt(CHARACTERS.length());
+                char randomChar = CHARACTERS.charAt(randomIndex);
+                sb.append(randomChar);
+            }	
+            checkAvailable = userDAO.checkVerifyKey(sb.toString());
+        }
+	    userDAO.updateVerifyKey(signupReq.getUsername(), sb.toString());
+	    
+        mailServiceImpl.sendVerifyEmail(sb.toString(), user.getEmail(), signupReq.getRedirectUri(), "forgot");
     }
     
     @Override
@@ -81,6 +105,11 @@ public class UserServiceImpl implements UserService {
     	} catch (Exception e) {
     		e.printStackTrace();
     	}
+    }
+    
+    @Override
+    public void changePasswordByVerifyKey(String verifyKey, String password) {
+    	
     }
     
 

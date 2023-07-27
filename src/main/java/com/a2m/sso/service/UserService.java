@@ -12,5 +12,9 @@ public interface UserService {
     
     void insertUser(SignupReq signupReq) throws Exception;
     
+    void forgotPass(SignupReq signupReq) throws Exception;
+    
     void changeStatusByVerifyKey(String verifyKey);
+    
+    void changePasswordByVerifyKey(String verifyKey, String password);
 }

@@ -64,17 +64,39 @@ public class AuthController {
     @GetMapping("sign-up")
     public String login(@RequestParam String redirectUri, Model model) {
         model.addAttribute(SecurityConstants.REDIRECT_URI_KEY, redirectUri);
-        return "login/sign-up";
+        return "sign-up/sign-up";
     }
     @GetMapping("verify")
     public String verify(@RequestParam String verifyKey, @RequestParam String redirectUri, Model model) {
-    	model.addAttribute("redirectUri", redirectUri);
+    	model.addAttribute(SecurityConstants.REDIRECT_URI_KEY, redirectUri);
     	int count = userDAO.checkVerifyKey(verifyKey);
     	if (count != 0) {
     		userServiceImpl.changeStatusByVerifyKey(verifyKey);
     	}
-    	else return "/login/verifyFailed";
-    	return "login/verify";
+    	else return "/verify/verifyFailed";
+    	return "verify/verify";
     }
+    
+    @GetMapping("forgot")
+    public String forgotPass(@RequestParam String redirectUri, Model model) {
+    	model.addAttribute(SecurityConstants.REDIRECT_URI_KEY, redirectUri);
+    	return "forgotPass/forgotPass";
+//    	int count = userDAO.checkVerifyKey(verifyKey);
+//    	if (count != 0) {
+//    		return "login/forgot";
+//    	}
+//    	return "/login/verifyFailed";
+    }
+    
+    @GetMapping("reset")
+    public String resetPass(@RequestParam String verifyKey, @RequestParam String redirectUri, Model model) {
+    	model.addAttribute(SecurityConstants.REDIRECT_URI_KEY, redirectUri);
+    	int count = userDAO.checkVerifyKey(verifyKey);
+    	if (count != 0) {
+    		return "forgotPass/resetPass";
+    	}
+    	return "/forgotPass/falseKey";
+    }
+    
 
 }

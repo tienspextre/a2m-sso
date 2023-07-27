@@ -58,7 +58,7 @@ const AuthSignUp = {
                 $("#err-repPassword-sign-up").text("Vui lòng nhập lại mật khẩu")
                 return;
             }
-            $("#err-fullname-sign-up").text("")
+            $("#err-repPassword-sign-up").text("")
             
             if (!emailRegex.test(email.trim())){
 				$("#err-email-sign-up").text("Định dạng email không đúng")

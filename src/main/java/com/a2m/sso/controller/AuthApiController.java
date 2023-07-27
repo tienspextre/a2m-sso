@@ -24,6 +24,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -114,4 +116,41 @@ public class AuthApiController {
         return ResponseEntity.ok(resp);
     }
     
+    @PostMapping("forgot")
+    private ResponseEntity<DataResponse> forgot(@Valid @RequestBody SignupReq signupReq, HttpServletResponse response) {
+        DataResponse resp = new DataResponse();
+        try {
+        	System.out.println(signupReq.getEmail());
+        	if (userDAO.checkUserByEmail(signupReq.getUsername(), signupReq.getEmail()) == 1) {
+        		resp.setStatus(CommonConstants.RESULT_OK);
+        		userServiceImpl.forgotPass(signupReq);
+        	}
+        	else {
+        		resp.setStatus(CommonConstants.RESULT_NG);
+                resp.setMessage("");
+        	}
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.setStatus(CommonConstants.RESULT_NG);
+            resp.setMessage("");
+        }
+        return ResponseEntity.ok(resp);
+    }
+    
+    @PostMapping("reset")
+    private ResponseEntity<DataResponse> resetPass(@Valid @RequestBody SignupReq signupReq, HttpServletResponse response) {
+        DataResponse resp = new DataResponse();
+        try {
+        	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    		String encodedPassword = passwordEncoder.encode(signupReq.getPassword());
+        	userDAO.updatePassByVerifyKey(encodedPassword, signupReq.getVerifyKey());
+        	resp.setStatus(CommonConstants.RESULT_OK);
+            resp.setMessage("");
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.setStatus(CommonConstants.RESULT_NG);
+            resp.setMessage("");
+        }
+        return ResponseEntity.ok(resp);
+    }
 }

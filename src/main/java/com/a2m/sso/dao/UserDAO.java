@@ -29,4 +29,10 @@ public interface UserDAO {
     int validateExistingEmail(String email);
     
     int validateExistingUserName(String username);
+    
+    void updateVerifyKey(String username, String verifyKey);
+    
+    void updatePassByVerifyKey(String password, String verifyKey);
+    
+    int checkUserByEmail(String username, String email);
 }

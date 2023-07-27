@@ -79,4 +79,16 @@
     <select id="validateExistingUserName" parameterType="String" resultType="int">
     	SELECT COUNT(*) FROM tsst_user where USER_ID = #{username}
     </select>
+    
+    <update id="updateVerifyKey" parameterType="String">
+    	UPDATE tsst_user LEFT JOIN tsst_user_info ON tsst_user.USER_UID = tsst_user_info.USER_UID SET tsst_user_info.VERIFY_KEY = #{verifyKey} WHERE #{username} = tsst_user.USER_ID
+    </update>
+    
+    <update id="updatePassByVerifyKey" parameterType="String">
+    	UPDATE tsst_user LEFT JOIN tsst_user_info ON tsst_user.USER_UID = tsst_user_info.USER_UID SET tsst_user.PWD = #{password} WHERE #{verifyKey} = tsst_user_info.VERIFY_KEY
+    </update>
+    
+    <select id="checkUserByEmail" parameterType="String" resultType="int">
+    	SELECT COUNT(*) FROM tsst_user LEFT JOIN tsst_user_info ON tsst_user.USER_UID = tsst_user_info.USER_UID where tsst_user.USER_ID = #{username} AND tsst_user_info.EMAIL = #{email}
+    </select>
 </mapper>
