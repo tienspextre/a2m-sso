@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotEmpty;
 
 @Getter
@@ -12,14 +14,14 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignupReq {
-    @NotEmpty
     private String username;
-    @NotEmpty
     private String password;
-    @NotEmpty
     private String email;
     private String name;
     private int userUID;
     private String status = "02-04";
     private String redirectUri;
+    private String verifyKey;
+    private Date createdDate;
+    private Date updatedDate;
 }

@@ -1,10 +1,11 @@
 package com.a2m.sso.dao;
 
-import com.a2m.sso.model.UserResponse;
-import com.a2m.sso.model.req.SignupReq;
+import java.time.LocalDateTime;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.cache.annotation.Cacheable;
+
+import com.a2m.sso.model.UserResponse;
 
 /**
  * Author tiennd
@@ -29,4 +30,16 @@ public interface UserDAO {
     int validateExistingEmail(String email);
     
     int validateExistingUserName(String username);
+    
+    void updateVerifyKey(UserResponse user);
+    
+    void updatePassByVerifyKey(String password, String verifyKey);
+    
+    int checkUserByEmail(String username, String email);
+    
+    LocalDateTime getExpiredDateByVerifyKey (String verifyKey);
+
+	void updateExpiredDate(UserResponse users);
+	
+	String getStatusByUserId(String username);
 }
