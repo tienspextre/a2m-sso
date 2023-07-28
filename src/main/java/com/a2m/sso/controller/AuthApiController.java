@@ -118,7 +118,7 @@ public class AuthApiController {
         DataResponse resp = new DataResponse();
         try {
 //        	System.out.println(signupReq.getEmail());
-        	if (userDAO.checkUserByEmail(signupReq.getUsername(), signupReq.getEmail()) == 1 && userDAO.getStatusByUserId(signupReq.getUsername()) == "02-03") {
+        	if (userDAO.checkUserByEmail(signupReq.getUsername(), signupReq.getEmail()) == 1 && userDAO.getStatusByUserId(signupReq.getUsername()).equals("02-03")) {
         		userServiceImpl.forgotPass(signupReq);
         		System.out.println("OK");
         		resp.setStatus(CommonConstants.RESULT_OK);
