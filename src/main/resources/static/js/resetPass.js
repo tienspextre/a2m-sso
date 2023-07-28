@@ -5,7 +5,6 @@ $(document).ready(async function () {
     AuthResetPass.redirectUri = searchParams.get("redirectUri");
     AuthResetPass.verifyKey = searchParams.get("verifyKey");
     document.getElementById("verifyKey").value = AuthResetPass.verifyKey;
-    hide()
     $("#btn-reset").unbind();
     $("#btn-reset").click(function () {
         AuthResetPass.methods.signup();
@@ -70,9 +69,11 @@ const AuthResetPass = {
             }).done(function (resp) {
 				console.log(resp.status);
                 if (resp.status == RESULT_OK) {
-					$("#toast-mess").text("Đặt lại mật khẩu thành công")
-                    $('#toast-container').show(0).delay(3000).hide(0);
-                    AuthResetPass.methods.handleRedirect();
+					$("#toast-mess").text("Đặt lại mật khẩu thành công. Hệ thống sẽ tự động chuyển trang đăng nhập sau 5 giây")
+                    $('#toast-container').show(0).delay(5000).hide(0);
+                    setTimeout(function() {
+					  AuthResetPass.methods.handleRedirect();
+					}, 5100);
                 } else {
                     $("#toast-mess").text("Không hợp lệ")
                     $('#toast-container').show(0).delay(3000).hide(0);

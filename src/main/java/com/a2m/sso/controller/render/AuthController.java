@@ -91,8 +91,8 @@ public class AuthController {
     @GetMapping("reset")
     public String resetPass(@RequestParam String verifyKey, @RequestParam String redirectUri, Model model) {
     	model.addAttribute(SecurityConstants.REDIRECT_URI_KEY, redirectUri);
-    	int count = userDAO.checkVerifyKey(verifyKey);
-    	if (count != 0) {
+    	boolean count = userServiceImpl.checkVerifyKeyExpired(verifyKey);
+    	if (count == true) {
     		return "forgotPass/resetPass";
     	}
     	return "/forgotPass/falseKey";

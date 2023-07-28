@@ -1,21 +1,11 @@
 package com.a2m.sso.controller;
 
-import com.a2m.sso.constant.CommonConstants;
-import com.a2m.sso.constant.SecurityConstants;
-import com.a2m.sso.dao.UserDAO;
-import com.a2m.sso.model.DataResponse;
-import com.a2m.sso.model.UserResponse;
-import com.a2m.sso.model.req.LoginReq;
-import com.a2m.sso.model.req.SignupReq;
-import com.a2m.sso.service.impl.ComSeqServiceImpl;
-import com.a2m.sso.service.impl.MailServiceImpl;
-import com.a2m.sso.service.impl.UserDetailsImpl;
-import com.a2m.sso.service.impl.UserDetailsServiceImpl;
-import com.a2m.sso.service.impl.UserServiceImpl;
-import com.a2m.sso.util.CookieUtils;
-import com.a2m.sso.util.JwtProvinderUtils;
+import java.time.LocalDateTime;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,7 +13,6 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,8 +20,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import com.a2m.sso.constant.CommonConstants;
+import com.a2m.sso.constant.SecurityConstants;
+import com.a2m.sso.dao.UserDAO;
+import com.a2m.sso.model.DataResponse;
+import com.a2m.sso.model.UserResponse;
+import com.a2m.sso.model.req.LoginReq;
+import com.a2m.sso.model.req.SignupReq;
+import com.a2m.sso.service.impl.UserServiceImpl;
+import com.a2m.sso.util.CookieUtils;
+import com.a2m.sso.util.JwtProvinderUtils;
 
 /**
  * Author tiennd
@@ -120,12 +117,18 @@ public class AuthApiController {
     private ResponseEntity<DataResponse> forgot(@Valid @RequestBody SignupReq signupReq, HttpServletResponse response) {
         DataResponse resp = new DataResponse();
         try {
-        	System.out.println(signupReq.getEmail());
-        	if (userDAO.checkUserByEmail(signupReq.getUsername(), signupReq.getEmail()) == 1) {
-        		resp.setStatus(CommonConstants.RESULT_OK);
+//        	System.out.println(signupReq.getEmail());
+        	if (userDAO.checkUserByEmail(signupReq.getUsername(), signupReq.getEmail()) == 1 && userDAO.getStatusByUserId(signupReq.getUsername()) == "02-03") {
         		userServiceImpl.forgotPass(signupReq);
+        		System.out.println("OK");
+        		resp.setStatus(CommonConstants.RESULT_OK);
+        		resp.setMessage("");
         	}
-        	else {
+        	else if (userDAO.getStatusByUserId(signupReq.getUsername()) != "02-03") {
+        		resp.setStatus(CommonConstants.RESULT_NP);
+                resp.setMessage("");
+        	}
+        	else{
         		resp.setStatus(CommonConstants.RESULT_NG);
                 resp.setMessage("");
         	}
@@ -141,9 +144,7 @@ public class AuthApiController {
     private ResponseEntity<DataResponse> resetPass(@Valid @RequestBody SignupReq signupReq, HttpServletResponse response) {
         DataResponse resp = new DataResponse();
         try {
-        	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    		String encodedPassword = passwordEncoder.encode(signupReq.getPassword());
-        	userDAO.updatePassByVerifyKey(encodedPassword, signupReq.getVerifyKey());
+        	userServiceImpl.changePasswordByVerifyKey(signupReq);
         	resp.setStatus(CommonConstants.RESULT_OK);
             resp.setMessage("");
         } catch (Exception e) {

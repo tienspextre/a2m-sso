@@ -1,15 +1,15 @@
 package com.a2m.sso.model;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Author tiennd
@@ -29,11 +29,12 @@ public class UserResponse implements Serializable {
     private String userId;
     @JsonIgnore
     private String pwd;
-//    private Date createdDate;
+    private LocalDateTime createdDate;
 //    private String createdBy;
 //    private Date pwdExpr;
 //    private String updatedBy;
-//    private Date updatedDate;
+    private LocalDateTime updatedDate;
+    private LocalDateTime expiredDate;
     private String status;
 //    private Long userInfoId;
     private String email;
@@ -46,8 +47,8 @@ public class UserResponse implements Serializable {
 //    private boolean twoFAEnable;
 //    @JsonIgnore
 //    private String twoFAKey;
-    @JsonIgnore
-    private String emailVerifyKey;
+//    @JsonIgnore
+    private String verifyKey;
 //    private String authProvider;
 //    private String organization;
 //    private String position;

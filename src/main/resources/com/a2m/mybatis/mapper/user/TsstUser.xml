@@ -61,7 +61,7 @@
     </insert>
     
     <insert id="insertUserInfo" parameterType="com.a2m.sso.model.UserResponse">
-    	INSERT INTO tsst_user_info (USER_UID, FULL_NAME, EMAIL, VERIFY_KEY) VALUES(#{userUid}, #{fullName}, #{email}, #{emailVerifyKey})
+    	INSERT INTO tsst_user_info (USER_UID, FULL_NAME, EMAIL, VERIFY_KEY, CREATED_DATE) VALUES(#{userUid}, #{fullName}, #{email}, #{emailVerifyKey}, #{createdDate})
     </insert>
     
     <select id="checkVerifyKey" parameterType="String" resultType="int">
@@ -80,8 +80,8 @@
     	SELECT COUNT(*) FROM tsst_user where USER_ID = #{username}
     </select>
     
-    <update id="updateVerifyKey" parameterType="String">
-    	UPDATE tsst_user LEFT JOIN tsst_user_info ON tsst_user.USER_UID = tsst_user_info.USER_UID SET tsst_user_info.VERIFY_KEY = #{verifyKey} WHERE #{username} = tsst_user.USER_ID
+    <update id="updateVerifyKey" parameterType="com.a2m.sso.model.UserResponse">
+    	UPDATE tsst_user LEFT JOIN tsst_user_info ON tsst_user.USER_UID = tsst_user_info.USER_UID SET tsst_user_info.VERIFY_KEY = #{verifyKey}, tsst_user_info.EXPIRED_DATE = #{expiredDate} WHERE tsst_user.USER_ID = #{userId}
     </update>
     
     <update id="updatePassByVerifyKey" parameterType="String">
@@ -89,6 +89,18 @@
     </update>
     
     <select id="checkUserByEmail" parameterType="String" resultType="int">
-    	SELECT COUNT(*) FROM tsst_user LEFT JOIN tsst_user_info ON tsst_user.USER_UID = tsst_user_info.USER_UID where tsst_user.USER_ID = #{username} AND tsst_user_info.EMAIL = #{email}
+    	SELECT COUNT(*) FROM tsst_user LEFT JOIN tsst_user_info ON tsst_user.USER_UID = tsst_user_info.USER_UID WHERE tsst_user.USER_ID = #{username} AND tsst_user_info.EMAIL = #{email}
+    </select>
+    
+    <select id="getExpiredDateByVerifyKey" parameterType="String" resultType="java.time.LocalDateTime">
+    	SELECT EXPIRED_DATE from tsst_user_info WHERE VERIFY_KEY = #{verifyKey}
+    </select>
+    
+    <update id="updateExpiredDate" parameterType="com.a2m.sso.model.UserResponse">
+    	UPDATE tsst_user_info SET EXPIRED_DATE = #{expiredDate} WHERE VERIFY_KEY = #{verifyKey}
+    </update>
+    
+    <select id="getStatusByUserId" parameterType="String" resultType="String">
+    	SELECT STATUS FROM tsst_user WHERE USER_ID = #{username}
     </select>
 </mapper>

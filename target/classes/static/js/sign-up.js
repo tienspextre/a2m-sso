@@ -88,9 +88,11 @@ const AuthSignUp = {
             }).done(function (resp) {
 				console.log(resp.status);
                 if (resp.status == RESULT_OK) {
-					$("#toast-mess").text("Đăng ký thành công")
-                    $('#toast-container').show(0).delay(3000).hide(0);
-                    AuthSignUp.methods.handleRedirect();
+					$("#toast-mess").text("Đăng ký thành công. Hệ thống sẽ tự động chuyển trang đăng nhập sau 5 giây")
+                    $('#toast-container').show(0).delay(5000).hide(0);
+                    setTimeout(function() {
+					  AuthSignUp.methods.handleRedirect();
+					}, 5100);
                 } else if (resp.status == USER_EXISTED) {
                     $("#toast-mess").text("Tài khoản đã tồn tại")
                     $('#toast-container').show(0).delay(3000).hide(0);

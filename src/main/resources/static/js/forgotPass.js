@@ -71,7 +71,10 @@ const AuthForgot = {
                 } else if (resp.status == RESULT_NG) {
                     $("#toast-mess").text("Tài khoản không tồn tại")
                     $('#toast-container').show(0).delay(3000).hide(0);
-                }
+                } else if (resp.status == RESULT_NP){
+					$("#toast-mess").text("Tài khoản chưa được xác minh. Kiểm tra mail để xác minh tài khoản")
+                    $('#toast-container').show(0).delay(3000).hide(0);
+				}
             }).fail(function (err) {
                 $("#toast-mess").text("An error occured")
                 $('#toast-container').show(0).delay(3000).hide(0);

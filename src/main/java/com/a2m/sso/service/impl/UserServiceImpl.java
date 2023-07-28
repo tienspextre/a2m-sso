@@ -1,12 +1,9 @@
 package com.a2m.sso.service.impl;
 
-import com.a2m.sso.dao.UserDAO;
-import com.a2m.sso.model.UserResponse;
-import com.a2m.sso.model.req.SignupReq;
-import com.a2m.sso.service.ComSeqService;
-import com.a2m.sso.service.UserService;
-
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -14,6 +11,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.a2m.sso.dao.UserDAO;
+import com.a2m.sso.model.UserResponse;
+import com.a2m.sso.model.req.SignupReq;
+import com.a2m.sso.service.ComSeqService;
+import com.a2m.sso.service.UserService;
 
 /**
  * Author tiennd
@@ -68,10 +71,12 @@ public class UserServiceImpl implements UserService {
             }	
             checkAvailable = userDAO.checkVerifyKey(sb.toString());
         }
-	    user.setEmailVerifyKey(sb.toString());
+	    user.setVerifyKey(sb.toString());
+	    LocalDateTime now = LocalDateTime.now();
+	    user.setCreatedDate(now);
         userDAO.insertUser(user);
         userDAO.insertUserInfo(user);
-        mailServiceImpl.sendVerifyEmail(sb.toString(), user.getEmail(), signupReq.getRedirectUri(), "verify");
+        mailServiceImpl.sendResetPassEmail(sb.toString(), user.getEmail(), signupReq.getRedirectUri());
     }
     
     @Override
@@ -93,9 +98,21 @@ public class UserServiceImpl implements UserService {
             }	
             checkAvailable = userDAO.checkVerifyKey(sb.toString());
         }
-	    userDAO.updateVerifyKey(signupReq.getUsername(), sb.toString());
-	    
-        mailServiceImpl.sendVerifyEmail(sb.toString(), user.getEmail(), signupReq.getRedirectUri(), "forgot");
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expiredTime = now.plus(10, ChronoUnit.MINUTES);
+//        System.out.println(expiredTime);
+        user.setExpiredDate(expiredTime);
+        user.setVerifyKey(sb.toString());
+	    userDAO.updateVerifyKey(user);
+        mailServiceImpl.sendResetPassEmail(sb.toString(), user.getEmail(), signupReq.getRedirectUri());
+    }
+    
+    @Override
+    public boolean checkVerifyKeyExpired(String verifyKey) {
+    	LocalDateTime expiredDate = userDAO.getExpiredDateByVerifyKey(verifyKey);
+    	LocalDateTime now = LocalDateTime.now();
+    	if (expiredDate.compareTo(now) > 0) return true;
+    	else return false;
     }
     
     @Override
@@ -108,8 +125,15 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public void changePasswordByVerifyKey(String verifyKey, String password) {
-    	
+    public void changePasswordByVerifyKey(SignupReq signupReq) {
+    	UserResponse user = new UserResponse();
+    	user.setVerifyKey(signupReq.getVerifyKey());
+    	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		String encodedPassword = passwordEncoder.encode(signupReq.getPassword());
+		LocalDateTime now = LocalDateTime.now();
+		user.setExpiredDate(now);
+    	userDAO.updatePassByVerifyKey(encodedPassword, signupReq.getVerifyKey());
+    	userDAO.updateExpiredDate(user);
     }
     
 

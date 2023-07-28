@@ -15,6 +15,9 @@ public interface UserService {
     void forgotPass(SignupReq signupReq) throws Exception;
     
     void changeStatusByVerifyKey(String verifyKey);
+
+	boolean checkVerifyKeyExpired(String verifyKey);
+
+	void changePasswordByVerifyKey(SignupReq signupReq);
     
-    void changePasswordByVerifyKey(String verifyKey, String password);
 }
